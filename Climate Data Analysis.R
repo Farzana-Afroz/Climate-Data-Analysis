@@ -1,14 +1,12 @@
-#setwd("E:/Summer-2024/Independent Study/R programming")
+#setwd("path")
 
 library(tidyverse)
 library(lubridate) # For working with dates
-
 
 mesonet <- read.csv("OKCE.csv")
 head(mesonet)
 str(mesonet)
 unique(mesonet$RAIN)
-
 
 #missing value
 
@@ -24,7 +22,6 @@ mesonet_NA <- mesonet %>%
 mesonet_clean <- mesonet_NA %>%
   filter(!is.na(TAVG) & !is.na(HAVG) & !is.na(RAIN))
 
-
 #Date in one column
 mesonet_Date <- mesonet_clean %>%
   mutate(Date = as.Date(paste(YEAR, MONTH, DAY, sep = "-")))
@@ -32,13 +29,10 @@ mesonet_Date <- mesonet_clean %>%
 ##barplot(mesonet_clean$RAIN)
 
 
-
 # Create a data frame with file Date & organize df
 mesonet_FData <- data.frame(mesonet_Date) %>%                     
                         select(-YEAR,-MONTH,-DAY) %>%
                         select(Date,STID,everything())
-
-
 
 # Define a function to determine the season based on the month
 get_season <- function(date) {
@@ -72,8 +66,6 @@ mesonet_season <- mesonet_season %>%
 hist(mesonet_season$TAVG)
 boxplot(mesonet_season$TAVG)
 
-
-
 #######################  Plot TAVG according to year and particular season
 
 ggplot(mesonet_season, aes(x = Year, y = TAVG, color = Season)) +
@@ -85,7 +77,6 @@ ggplot(mesonet_season, aes(x = Year, y = TAVG, color = Season)) +
   theme_minimal() +
   scale_color_manual(values = c( "Summer" = "red"))+
   scale_x_continuous(breaks = seq(min(mesonet_season$Year), max(mesonet_season$Year), by = 2))  # Setting 2-year intervals
-
 
 
 ######## Plot TAVG according to year and four seasons
@@ -100,9 +91,7 @@ ggplot(mesonet_season, aes(x = Year, y = TAVG, color = Season)) +
   scale_color_manual(values = c("Winter" = "blue", "Spring" = "green", "Summer" = "red", "Fall" = "orange"))+
   scale_x_continuous(breaks = seq(min(mesonet_season$Year), max(mesonet_season$Year), by = 2))  # Setting 2-year intervals
 
-
-
-############ Seasonal avg
+############ Seasonal avg ######
 ######## Use mutate() to add a season column to the data frame
 
 mesonet_season <- mesonet_FData %>%
@@ -125,13 +114,9 @@ ggplot(seasonal_avg, aes(x = Year, y = TAVG, color = Season)) +
   scale_color_manual(values = c("Winter" = "blue", "Spring" = "green", "Summer" = "red", "Fall" = "orange"))+
 scale_x_continuous(breaks = seq(min(mesonet_season$Year), max(mesonet_season$Year), by = 2))  # Setting 2-year intervals
 
-
-
-
 ###################   HAVG   ##################################
 
 ################### HAVG: Extract the year from the Date column
-
 
 ## EDA
 
@@ -149,8 +134,6 @@ ggplot(mesonet_season, aes(x = Year, y = HAVG, color = Season)) +
   theme_minimal() +
   scale_color_manual(values = c( "Summer" = "red"))+
   scale_x_continuous(breaks = seq(min(mesonet_season$Year), max(mesonet_season$Year), by = 2))  # Setting 2-year intervals
-
-
 
 ######## Plot HAVG according to year and four seasons
 
@@ -189,17 +172,9 @@ ggplot(seasonal_avg, aes(x = Year, y = HAVG, color = Season)) +
   scale_color_manual(values = c("Winter" = "blue", "Spring" = "green", "Summer" = "red", "Fall" = "orange"))+
   scale_x_continuous(breaks = seq(min(mesonet_season$Year), max(mesonet_season$Year), by = 2))  # Setting 2-year intervals
 
-
-
-
-
-
-
-
 ###################   RAIN   ##################################
 
 ################### RAIN: Extract the year from the Date column
-
 
 ## EDA
 
@@ -256,35 +231,6 @@ ggplot(seasonal_avg, aes(x = Year, y = RAIN, color = Season)) +
   theme_minimal() +
   scale_color_manual(values = c("Winter" = "blue", "Spring" = "green", "Summer" = "red", "Fall" = "orange"))+
   scale_x_continuous(breaks = seq(min(mesonet_season$Year), max(mesonet_season$Year), by = 2))  # Setting 2-year intervals
-
-
-
-
-
-
-
-##################################################### rough part for test
-
-
-mesonet_season <- mesonet_season %>%
-  mutate(Year = year(Date))
-
-# Calculate the average temperature for each year and season
-seasonal_avg <- mesonet_season %>%
-  group_by(Year, Season) %>%
-  summarize(TAVG = mean(TAVG, na.rm = TRUE))
-
-# Plot the seasonal average temperature over the years with 2-year intervals
-ggplot(seasonal_avg, aes(x = Year, y = TAVG, color = Season)) +
-  geom_point() +
-  geom_line(aes(group = Season)) +
-  #geom_smooth(method = "lm", se = FALSE) +  # Adding a trend line
-  labs(title = "Seasonal Average Temperature in OKCE",
-       x = "Year",
-       y = "TAVG") +
-  theme_minimal() +
-  scale_color_manual(values = c("Winter" = "blue", "Spring" = "green", "Summer" = "red", "Fall" = "orange")) +
-  scale_x_continuous(breaks = seq(min(seasonal_avg$Year), max(seasonal_avg$Year), by = 2))  # Setting 2-year intervals
 
 
 
